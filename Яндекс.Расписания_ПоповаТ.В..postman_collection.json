@@ -1,0 +1,669 @@
+{
+	"info": {
+		"_postman_id": "b65a76d5-fccb-4e53-8209-f93251b7a844",
+		"name": "Яндекс.Расписания_ПоповаТ.В.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47960389",
+		"_collection_link": "https://s-team-552897.postman.co/workspace/WoodTV-WS-API-testing~bfa741cf-403e-4068-9d99-27ffe333d8bd/collection/47960389-b65a76d5-fccb-4e53-8209-f93251b7a844?action=share&source=collection_link&creator=47960389"
+	},
+	"item": [
+		{
+			"name": "Расписание рейсов между станциями Позитивный",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Мошково\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}search/?apikey={{apikey}}&format=json&from=c22568&to=c20099&lang=ru_RU&page=1&date=2025-09-02",
+					"host": [
+						"{{baseUrl}}search"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "from",
+							"value": "c22568"
+						},
+						{
+							"key": "to",
+							"value": "c20099"
+						},
+						{
+							"key": "lang",
+							"value": "ru_RU"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "date",
+							"value": "2025-09-02"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Расписание рейсов между станциями Негативный (неверный код станции)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404 or 400\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([400, 404]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ошибки в ответе\", function () {\r",
+							"    const responseText = pm.response.text()\r",
+							"    const errorMessages = [\r",
+							"        \"Не нашли объект по yandex коду\",\r",
+							"        \"from: Не указан параметр from.\",\r",
+							"        \"to: Не указан параметр to.\"\r",
+							"    ];\r",
+							"\r",
+							"    let errorFound = false;\r",
+							"\r",
+							"    for (let Messages of errorMessages) {\r",
+							"        if (responseText.includes(Messages)) {\r",
+							"            errorFound = true;\r",
+							"            break;\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"    pm.expect(errorFound).to.be.true;\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}search/?apikey={{apikey}}&format=json&to=c20099&lang=ru_RU&page=1&date=2025-09-02",
+					"host": [
+						"{{baseUrl}}search"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "to",
+							"value": "c20099"
+						},
+						{
+							"key": "lang",
+							"value": "ru_RU"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "date",
+							"value": "2025-09-02"
+						},
+						{
+							"key": "from",
+							"value": "16",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Расписание рейсов по станции Позитивный",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Ояш\");\r",
+							"});\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Проверка наличия расписания\", () => {\r",
+							"    pm.expect(response.schedule).to.exist;\r",
+							"    pm.expect(response.schedule.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"if (response.schedule && response.schedule.length > 0) {\r",
+							"    const firstUid = response.schedule[0].thread.uid;\r",
+							"    pm.collectionVariables.set(\"dynamicUid\", firstUid);\r",
+							"    pm.test(\"UID успешно сохранен\", () => {\r",
+							"        pm.expect(firstUid).to.exist;\r",
+							"        pm.expect(pm.collectionVariables.get(\"dynamicUid\")).to.equal(firstUid);\r",
+							"        return true;\r",
+							"    });\r",
+							"    pm.test(`Сохраненный UID: ${firstUid}`, () => {\r",
+							"        return true;\r",
+							"    });\r",
+							"} else {\r",
+							"    pm.test(\"Ошибка: расписание не найдено\", () => {\r",
+							"        return false;\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"var template = `\r",
+							"<table>\r",
+							"    <tr style=\"background-color: #f0f0f0;\">\r",
+							"        <th>thread.title</th>\r",
+							"        <th>thread.number</th>\r",
+							"        <th>thread.uid</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each schedule}}\r",
+							"        <tr style=\"background-color: white;\">\r",
+							"            <td>{{thread.title}}</td>\r",
+							"            <td>{{thread.number}}</td>\r",
+							"            <td>{{thread.uid}}</td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"pm.visualizer.set(template, {\r",
+							"    schedule: pm.response.json().schedule\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}schedule/?apikey={{apikey}}&station=s9654586&transport_types=suburban",
+					"host": [
+						"{{baseUrl}}schedule"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "station",
+							"value": "s9654586"
+						},
+						{
+							"key": "transport_types",
+							"value": "suburban"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Расписание рейсов по станции Негативный (отсутствует обязат.парам. Станция)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"pm.test(\"Не нашли станцию по yandex коду .\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Не нашли станцию по yandex коду .\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Статус 400\", () => pm.response.to.have.status(400));\r",
+							"const j = pm.response.json();\r",
+							"pm.test(\"Есть объект error\", () => pm.expect(j).to.have.property(\"error\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}schedule/?apikey={{apikey}}&transport_types=suburban",
+					"host": [
+						"{{baseUrl}}schedule"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "transport_types",
+							"value": "suburban"
+						},
+						{
+							"key": "station",
+							"value": "s9654586",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Список станций следования",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var template = `\r",
+							"<table>\r",
+							"    <tr style=\"background-color: #f0f0f0;\">\r",
+							"        <th>Название станции</th>\r",
+							"        <th>Код станции</th>\r",
+							"        <th>Прибытие</th>\r",
+							"        <th>Отправление</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each stops}}\r",
+							"        <tr style=\"background-color: white;\">\r",
+							"            <td>{{station.title}}</td>\r",
+							"            <td>{{station.code}}</td>\r",
+							"            <td>{{arrival}}</td>\r",
+							"            <td>{{departure}}</td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"pm.visualizer.set(template, {\r",
+							"    stops: pm.response.json().stops\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}thread/?apikey={{apikey}}&format=json&uid={{dynamicUid}}&lang=ru_RU&show_systems=all",
+					"host": [
+						"{{baseUrl}}thread"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "uid",
+							"value": "{{dynamicUid}}"
+						},
+						{
+							"key": "lang",
+							"value": "ru_RU"
+						},
+						{
+							"key": "show_systems",
+							"value": "all"
+						},
+						{
+							"key": "date",
+							"value": "2025-09-18",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Список станций следования Негативный - нет параметра Dynamic UID",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"uid: Не указан uid нитки.\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"uid: Не указан uid нитки.\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}thread/?apikey={{apikey}}&format=json&lang=ru_RU&show_systems=all",
+					"host": [
+						"{{baseUrl}}thread"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "lang",
+							"value": "ru_RU"
+						},
+						{
+							"key": "show_systems",
+							"value": "all"
+						},
+						{
+							"key": "uid",
+							"value": "{{dynamicUid}}",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Список ближайших станций",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var template = `\r",
+							"<table border=\"1\" style=\"border-collapse: collapse; width: 100%;\">\r",
+							"    <tr style=\"background-color: #f0f0f0;\">\r",
+							"        <th>Название станции</th>\r",
+							"        <th>Широта (lat)</th>\r",
+							"        <th>Долгота (lng)</th>\r",
+							"        <th>Код станции</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each stations}}\r",
+							"        <tr style=\"background-color: white;\">\r",
+							"            <td>{{title}}</td>\r",
+							"            <td>{{lat}}</td>\r",
+							"            <td>{{lng}}</td>\r",
+							"            <td>{{code}}</td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"pm.visualizer.set(template, {\r",
+							"    stations: pm.response.json().stations\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}nearest_stations/?apikey={{apikey}}&format=json&lat=55.515360&lng=83.873809&distance=50&lang=ru_RU",
+					"host": [
+						"{{baseUrl}}nearest_stations"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "lat",
+							"value": "55.515360"
+						},
+						{
+							"key": "lng",
+							"value": "83.873809"
+						},
+						{
+							"key": "distance",
+							"value": "50"
+						},
+						{
+							"key": "lang",
+							"value": "ru_RU"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Список ближайших станций Негативный (Нет долготы)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"lng: Не указан параметр lng.\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"lng: Не указан параметр lng.\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}nearest_stations/?apikey={{apikey}}&format=json&lat=50.440046&distance=50&lang=ru_RU",
+					"host": [
+						"{{baseUrl}}nearest_stations"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "apikey",
+							"value": "{{apikey}}"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "lat",
+							"value": "50.440046"
+						},
+						{
+							"key": "distance",
+							"value": "50"
+						},
+						{
+							"key": "lang",
+							"value": "ru_RU"
+						},
+						{
+							"key": "lng",
+							"value": "40.4882367",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://api.rasp.yandex.net/v3.0/"
+		},
+		{
+			"key": "apikey",
+			"value": "1f3b770b-610f-491f-a500-9f563df29d12"
+		},
+		{
+			"key": "dynamicUid",
+			"value": "6425_0_9654586_g25_4"
+		}
+	]
+}
