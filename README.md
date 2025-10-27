@@ -43,9 +43,13 @@ git clone https://github.com/woodtv-2025/yandex-rasp-api-tests.git
 
 ### 2. Настройка в Postman
 1. Импортируйте файл коллекции `.postman_collection.json`
-2. Импортируйте Environment файл `.postman_environment.json`
-3. Убедитесь, что выбран правильный Environment
-
+2.После импорта коллекции:
+  1. Создайте Environment в Postman
+  2. Заполните переменные:
+   - `baseUrl`: `https://api.rasp.yandex.net/v3.0/`
+   - `apikey`: [Получите ключ на developer.rasp.yandex.ru](https://developer.rasp.yandex.ru)
+   - `currentDate`: `2025-12-15`
+    
 ### 3. Запуск тестов
 - Откройте Postman Runner
 - Выберите коллекцию "Яндекс.Расписания"
